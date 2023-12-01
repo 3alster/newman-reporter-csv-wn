@@ -1,22 +1,8 @@
 let log
 const logs = []
 const columns = [
-  'iteration',
-  'collectionName',
-  'requestName',
-  'method',
-  'url',
-  'status',
-  'code',
-  'responseTime',
-  'responseSize',
-  'executed',
-  'failed',
-  'skipped',
-  'totalAssertions',
-  'executedCount',
-  'failedCount',
-  'skippedCount'
+  'idText',
+  'Testfall',
 ]
 
 const CSV = {
@@ -34,7 +20,7 @@ const CSV = {
  * @param {String} options.includeBody - Whether the response body should be included in each row.
  * @returns {*}
  */
-module.exports = function newmanCSVReporter (newman, options) {
+module.exports = function newmanCSVReporter(newman, options) {
   if (options.includeBody) {
     columns.push('body')
   }
@@ -49,26 +35,16 @@ module.exports = function newmanCSVReporter (newman, options) {
     if (err || !e.item.name) return
     const { cursor, item, request } = e
 
-    Object.assign(log, {
-      collectionName: newman.summary.collection.name,
-      iteration: cursor.iteration + 1,
-      requestName: item.name,
-      method: request.method,
-      url: request.url.toString(),
-      totalAssertions: 0,
-      executedCount: 0,
-      failedCount: 0,
-      skippedCount: 0
-    })
+
   })
 
   newman.on('request', (err, e) => {
     if (err || !e.item.name) return
     const { status, code, responseTime, responseSize, stream } = e.response
-    Object.assign(log, { status, code, responseTime, responseSize })
+   // Object.assign(log, { status, code, responseTime, responseSize })
 
     if (options.includeBody) {
-      Object.assign(log, { body: stream.toString() })
+     // Object.assign(log, { body: stream.toString() })
     }
   })
 
@@ -76,17 +52,26 @@ module.exports = function newmanCSVReporter (newman, options) {
     const { assertion } = e
     const key = err ? 'failed' : e.skipped ? 'skipped' : 'executed'
 
-    log[key] = log[key] || []
-    log[key].push(assertion)
+    if (key==="failed")
+    console.log("!failed!! "+e.assertion)
+    //log[key] = log[key] || []
+    //log[key].push(assertion)
 
-    log.totalAssertions++
-    log[`${key}Count`]++
+    //log.totalAssertions++
+    //log[`${key}Count`]++
+    if (e.assertion.startsWith("idText: INST-"))
+      Object.assign(log,{idText:e.assertion.substring(8)})
+    if (e.assertion.startsWith("Testfall: ")) {
+      console.log(e.assertion);
+      Object.assign(log,{Testfall:e.assertion.substring(10)})
+      logs.push(log);
+    }
   })
 
   newman.on('item', (err, e) => {
     if (err) return
 
-    logs.push(log)
+  //  logs.push(log)
   })
 
   newman.on('beforeDone', (err, e) => {
@@ -103,7 +88,7 @@ module.exports = function newmanCSVReporter (newman, options) {
   })
 }
 
-function getResults () {
+function getResults() {
   const results = logs.map((log) => {
     const row = []
 

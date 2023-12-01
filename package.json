@@ -1,13 +1,13 @@
 {
-  "name": "newman-reporter-csv",
-  "version": "1.3.0",
-  "description": "A CSV reporter for Newman.",
+  "name": "newman-reporter-csv-wn",
+  "version": "0.0.1",
+  "description": "Rework for custom needs of the Matt Ball's CSV reporter.",
   "main": "index.js",
-  "author": "Matt Ball",
+  "author": "Artur Pachin",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matt-ball/newman-reporter-csv.git"
+    "url": "git+https://github.com/3alster/newman-reporter-csv-wn.git"
   },
   "keywords": [
     "newman",
